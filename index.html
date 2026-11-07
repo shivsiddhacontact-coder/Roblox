@@ -2546,9 +2546,9 @@ function getCenterTithiHtml(p) {
     let isAmavasya = (tNum === 15 || tNum === 30) && !isPoornima;
 
     if (isAmavasya) {
-        return `<div style="border: 2px solid #000; border-radius: 50%; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box;"><strong style="font-size: 15px; color: #000; -webkit-text-stroke: 0.5px #fff; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff; line-height: 1;">15</strong></div>`;
+        return `<div style="background-color: #000; border-radius: 50%; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box;"><strong style="font-size: 15px; color: #fff; line-height: 1;">15</strong></div>`;
     } else if (isPoornima) {
-        return `<div style="border: 2px solid #fff; border-radius: 50%; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; filter: drop-shadow(0 0 1px rgba(0,0,0,0.8));"><strong style="font-size: 15px; color: #fff; -webkit-text-stroke: 0.5px #000; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; line-height: 1;">15</strong></div>`;
+        return `<div style="background-color: #fff; border: 1px solid #aaa; border-radius: 50%; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box;"><strong style="font-size: 15px; color: #000; line-height: 1;">15</strong></div>`;
     } else {
         return `<strong style="font-size:18px;">${tNum}</strong>`;
     }

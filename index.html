@@ -2409,10 +2409,57 @@ const HINDU_MONTHS_EN = [
     'Ashwin', 'Kartik', 'Margashirsha', 'Pausha', 'Magha', 'Phalguna'
 ];
 
+const GREGORIAN_MONTH_NAMES_EN = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+];
+
 const GREGORIAN_MONTH_ABBR = [
     'Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.',
     'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'
 ];
+
+const HINDU_TITHI_BASE_HI = {
+    1: 'प्रतिपदा', 2: 'द्वितीया', 3: 'तृतीया', 4: 'चतुर्थी', 5: 'पंचमी',
+    6: 'षष्ठी', 7: 'सप्तमी', 8: 'अष्टमी', 9: 'नवमी', 10: 'दशमी',
+    11: 'एकादशी', 12: 'द्वादशी', 13: 'त्रयोदशी', 14: 'चतुर्दशी'
+};
+
+function getHinduTithiNameHindi(p) {
+    if (!p) return '';
+    let tNum = p.tithiNumber;
+    let isShukla = p.paksha === 'Shukla' || (p.tithiName && p.tithiName.toLowerCase().includes('shukla'));
+    if (tNum === 15) {
+        if (isShukla || (p.tithiName && p.tithiName.toLowerCase().includes('purnima'))) {
+            return 'पूर्णिमा';
+        } else {
+            return 'अमावस्या';
+        }
+    }
+    if (tNum === 30) {
+        return 'अमावस्या';
+    }
+    return HINDU_TITHI_BASE_HI[tNum] || '';
+}
+
+const HINDU_MONTHS_HI = [
+    'चैत्र', 'वैशाख', 'ज्येष्ठ', 'आषाढ़', 'श्रावण', 'भाद्रपद',
+    'आश्विन', 'कार्तिक', 'मार्गशीर्ष', 'पौष', 'माघ', 'फाल्गुन'
+];
+
+function getHinduMonthHi(p) {
+    if (!p) return "";
+    if (p.amantaMonthName) {
+        let hiBase = p.amantaMonthName.split(" ")[0].trim();
+        return p.isAdhik ? "अधिक " + hiBase : hiBase;
+    }
+    let m = p.amantaMonth || p.lunarMonth || p.month;
+    if (typeof m === "number") {
+        let name = HINDU_MONTHS_HI[(m - 1 + 12) % 12];
+        return p.isAdhik ? "अधिक " + name : name;
+    }
+    return "";
+}
 
 function getHinduMonthEn(p) {
     if (!p) return '';
@@ -2469,7 +2516,7 @@ function getHinduCalendarHeader(year, month) {
         let d = new Date(year, month, day, 0, 0, 0);
         let sunriseDate = getSunriseTime(d, lat, lng);
         let p = new PanchangEngine(sunriseDate);
-        let mName = getHinduMonthEn(p);
+        let mName = getHinduMonthHi(p);
         if (mName) monthsSet.add(mName);
         let yInfo = getHinduYearInfo(d, p);
         vsSet.add(yInfo.vs);
@@ -2693,30 +2740,8 @@ function renderMonthlyCalendar(year, month) {
         let tNum = p.tithiNumber;
         let hindiMonth = p.amantaMonthName ? p.amantaMonthName.split(' ')[0] : 'Unknown';
 
-        let pakshaLabel = p.paksha === 'Shukla' ? 'शु' : 'कृ';
-        let tithiCircleHTML = '<div style="display:flex; flex-direction:column; align-items:center;">';
-        if (p.tithiNumber === 15 || p.tithiNumber === 30) {
-            if (p.paksha === 'Shukla' || p.tithiName.includes('Purnima')) {
-                tithiCircleHTML += `<div style="background:#fff; border: 2px solid var(--primary-color); width:16px; height:16px; border-radius:50%; box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>`;
-            } else {
-                tithiCircleHTML += `<div style="background:#000; border: 2px solid var(--primary-color); width:16px; height:16px; border-radius:50%; box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>`;
-            }
-        } else {
-            tithiCircleHTML += `<div style="background:var(--primary-color); color:#fff; width:20px; height:20px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:11px; font-weight:bold; box-shadow:0 1px 3px rgba(0,0,0,0.2);">${tNum === 15 || tNum === 30 ? '' : tNum}</div>`;
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-        tithiCircleHTML += `<span style="font-size:9px; color:gray; font-weight:bold; margin-top:2px;">${pakshaLabel}</span></div>`;
+        let pakshaLabel = p.paksha === 'Shukla' ? 'शुक्ल' : 'कृष्ण';
+        let tithiCircleHTML = `<div style="background:var(--primary-color); color:#fff; width:20px; height:20px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:11px; font-weight:bold; box-shadow:0 1px 3px rgba(0,0,0,0.2);">${date.getDate()}</div>`;
 
         let isToday = (date.getDate() === new Date().getDate() && date.getMonth() === new Date().getMonth() && date.getFullYear() === new Date().getFullYear());
         let panchakDetails = getPanchakDetails(date, p.lat, p.lng);
@@ -2728,19 +2753,22 @@ function renderMonthlyCalendar(year, month) {
 
         html += `<div class="calendar-cell ${isToday ? 'today' : ''} ${panchakClass}" style="position:relative; padding-top:25px; aspect-ratio: 1/1.3; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; ${cellStyle}" onclick="openCalendarModal(${year}, ${month}, '${date.toDateString()}')">
 
-            <span style="position:absolute; top:2px; font-size:12px; font-weight:700; color:var(--text-main); white-space:nowrap; text-align:center;">${NAKSHATRA_NAMES_HINDI[p.moonNakshatraIndex]}</span>
+            <span style="font-size:11px; font-weight:700; color:var(--text-main); white-space:nowrap; text-align:center; margin-top:-10px; margin-bottom:2px;">${NAKSHATRA_NAMES_HINDI[p.moonNakshatraIndex]}</span>
 
             <div style="position:absolute; top:2px; left:2px; display:flex; flex-direction:column; gap:1px; text-align:left;">
                 <span style="font-size:10px; color:var(--primary-color); font-weight:700; line-height:1; letter-spacing:-0.5px;">${deityName}</span>
                 <span style="font-size:10px; color:var(--text-muted); font-weight:700; line-height:1; letter-spacing:-0.5px;">${nakshatraLord}</span>
             </div>
 
-            <div style="position:absolute; top:2px; right:2px; display:flex; flex-direction:column; align-items:center; gap:2px;">
-                <div style="display:flex; align-items:center; gap:2px;">
-                    <span style="font-size:10px; color:var(--primary-color); font-weight:700;">${GREGORIAN_MONTH_ABBR[date.getMonth()]}</span>
+            <div style="position:absolute; top:2px; right:2px; display:flex; flex-direction:column; gap:1px; text-align:right;">
+                <div style="display:flex; align-items:center; justify-content:flex-end; gap:3px;">
+                    <span style="font-size:10px; color:var(--primary-color); font-weight:700; line-height:1;">${GREGORIAN_MONTH_NAMES_EN[date.getMonth()]}</span>
                     ${tithiCircleHTML}
                 </div>
-                ${sunEmojiHtml}
+                <div style="display:flex; align-items:center; justify-content:flex-end; gap:3px;">
+                    <span style="font-size:10px; color:var(--text-muted); font-weight:700; line-height:1;">${pakshaLabel}</span>
+                    ${sunEmojiHtml}
+                </div>
             </div>
             ${(() => {
                 let rightBarContent = '';
@@ -2904,7 +2932,7 @@ function renderMonthlyCalendar(year, month) {
 
             <div style="flex-grow:1; display:flex; flex-direction:column; align-items:center; justify-content:center; margin-top: 15px; margin-bottom: auto;">
                 <strong style="font-size:18px;">${p.tithiNumber}</strong>
-
+                <span style="font-size:11px; font-weight:600; color:var(--text-muted); margin-top:2px;">${pakshaLabel} ${getHinduTithiNameHindi(p)}</span>
             </div>
 
             ${(() => {
@@ -4015,30 +4043,8 @@ renderMonthlyCalendar = function(year, month) {
         let tNum = p.tithiNumber;
         let hindiMonth = p.amantaMonthName ? p.amantaMonthName.split(' ')[0] : 'Unknown';
 
-        let pakshaLabel = p.paksha === 'Shukla' ? 'शु' : 'कृ';
-        let tithiCircleHTML = '<div style="display:flex; flex-direction:column; align-items:center;">';
-        if (p.tithiNumber === 15 || p.tithiNumber === 30) {
-            if (p.paksha === 'Shukla' || p.tithiName.includes('Purnima')) {
-                tithiCircleHTML += `<div style="background:#fff; border: 2px solid var(--primary-color); width:16px; height:16px; border-radius:50%; box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>`;
-            } else {
-                tithiCircleHTML += `<div style="background:#000; border: 2px solid var(--primary-color); width:16px; height:16px; border-radius:50%; box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>`;
-            }
-        } else {
-            tithiCircleHTML += `<div style="background:var(--primary-color); color:#fff; width:20px; height:20px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:11px; font-weight:bold; box-shadow:0 1px 3px rgba(0,0,0,0.2);">${tNum === 15 || tNum === 30 ? '' : tNum}</div>`;
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-        tithiCircleHTML += `<span style="font-size:9px; color:gray; font-weight:bold; margin-top:2px;">${pakshaLabel}</span></div>`;
+        let pakshaLabel = p.paksha === 'Shukla' ? 'शुक्ल' : 'कृष्ण';
+        let tithiCircleHTML = `<div style="background:var(--primary-color); color:#fff; width:20px; height:20px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:11px; font-weight:bold; box-shadow:0 1px 3px rgba(0,0,0,0.2);">${date.getDate()}</div>`;
 
         let isToday = (date.getDate() === new Date().getDate() && date.getMonth() === new Date().getMonth() && date.getFullYear() === new Date().getFullYear());
         let panchakDetails = getPanchakDetails(date, p.lat, p.lng);
@@ -4050,19 +4056,22 @@ renderMonthlyCalendar = function(year, month) {
 
         html += `<div class="calendar-cell ${isToday ? 'today' : ''} ${panchakClass}" style="position:relative; padding-top:25px; aspect-ratio: 1/1.3; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; ${cellStyle}" onclick="openCalendarModal(${year}, ${month}, '${date.toDateString()}')">
 
-            <span style="position:absolute; top:2px; font-size:12px; font-weight:700; color:var(--text-main); white-space:nowrap; text-align:center;">${NAKSHATRA_NAMES_HINDI[p.moonNakshatraIndex]}</span>
+            <span style="font-size:11px; font-weight:700; color:var(--text-main); white-space:nowrap; text-align:center; margin-top:-10px; margin-bottom:2px;">${NAKSHATRA_NAMES_HINDI[p.moonNakshatraIndex]}</span>
 
             <div style="position:absolute; top:2px; left:2px; display:flex; flex-direction:column; gap:1px; text-align:left;">
                 <span style="font-size:10px; color:var(--primary-color); font-weight:700; line-height:1; letter-spacing:-0.5px;">${deityName}</span>
                 <span style="font-size:10px; color:var(--text-muted); font-weight:700; line-height:1; letter-spacing:-0.5px;">${nakshatraLord}</span>
             </div>
 
-            <div style="position:absolute; top:2px; right:2px; display:flex; flex-direction:column; align-items:center; gap:2px;">
-                <div style="display:flex; align-items:center; gap:2px;">
-                    <span style="font-size:10px; color:var(--primary-color); font-weight:700;">${GREGORIAN_MONTH_ABBR[date.getMonth()]}</span>
+            <div style="position:absolute; top:2px; right:2px; display:flex; flex-direction:column; gap:1px; text-align:right;">
+                <div style="display:flex; align-items:center; justify-content:flex-end; gap:3px;">
+                    <span style="font-size:10px; color:var(--primary-color); font-weight:700; line-height:1;">${GREGORIAN_MONTH_NAMES_EN[date.getMonth()]}</span>
                     ${tithiCircleHTML}
                 </div>
-                ${sunEmojiHtml}
+                <div style="display:flex; align-items:center; justify-content:flex-end; gap:3px;">
+                    <span style="font-size:10px; color:var(--text-muted); font-weight:700; line-height:1;">${pakshaLabel}</span>
+                    ${sunEmojiHtml}
+                </div>
             </div>
             ${(() => {
                 let rightBarContent = '';
@@ -4220,7 +4229,7 @@ renderMonthlyCalendar = function(year, month) {
 
             <div style="flex-grow:1; display:flex; flex-direction:column; align-items:center; justify-content:center; margin-top: 15px; margin-bottom: auto;">
                 <strong style="font-size:18px;">${p.tithiNumber}</strong>
-
+                <span style="font-size:11px; font-weight:600; color:var(--text-muted); margin-top:2px;">${pakshaLabel} ${getHinduTithiNameHindi(p)}</span>
             </div>
 
             ${(() => {

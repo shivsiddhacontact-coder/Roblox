@@ -2415,8 +2415,8 @@ const GREGORIAN_MONTH_NAMES_EN = [
 ];
 
 const GREGORIAN_MONTH_ABBR = [
-    'Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.',
-    'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ];
 
 const HINDU_TITHI_BASE_HI = {
@@ -2762,13 +2762,10 @@ function renderMonthlyCalendar(year, month) {
 
             <div style="position:absolute; top:2px; right:2px; display:flex; flex-direction:column; gap:1px; text-align:right;">
                 <div style="display:flex; align-items:center; justify-content:flex-end; gap:3px;">
-                    <span style="font-size:10px; color:var(--primary-color); font-weight:700; line-height:1;">${GREGORIAN_MONTH_NAMES_EN[date.getMonth()]}</span>
+                    <span style="font-size:10px; color:var(--primary-color); font-weight:700; line-height:1;">${GREGORIAN_MONTH_ABBR[date.getMonth()]}</span>
                     ${tithiCircleHTML}
                 </div>
-                <div style="display:flex; align-items:center; justify-content:flex-end; gap:3px;">
-                    <span style="font-size:10px; color:var(--text-muted); font-weight:700; line-height:1;">${pakshaLabel}</span>
-                    ${sunEmojiHtml}
-                </div>
+                ${sunEmojiHtml ? `<div style="display:flex; justify-content:flex-end;">${sunEmojiHtml}</div>` : ''}
             </div>
             ${(() => {
                 let rightBarContent = '';
@@ -4065,13 +4062,10 @@ renderMonthlyCalendar = function(year, month) {
 
             <div style="position:absolute; top:2px; right:2px; display:flex; flex-direction:column; gap:1px; text-align:right;">
                 <div style="display:flex; align-items:center; justify-content:flex-end; gap:3px;">
-                    <span style="font-size:10px; color:var(--primary-color); font-weight:700; line-height:1;">${GREGORIAN_MONTH_NAMES_EN[date.getMonth()]}</span>
+                    <span style="font-size:10px; color:var(--primary-color); font-weight:700; line-height:1;">${GREGORIAN_MONTH_ABBR[date.getMonth()]}</span>
                     ${tithiCircleHTML}
                 </div>
-                <div style="display:flex; align-items:center; justify-content:flex-end; gap:3px;">
-                    <span style="font-size:10px; color:var(--text-muted); font-weight:700; line-height:1;">${pakshaLabel}</span>
-                    ${sunEmojiHtml}
-                </div>
+                ${sunEmojiHtml ? `<div style="display:flex; justify-content:flex-end;">${sunEmojiHtml}</div>` : ''}
             </div>
             ${(() => {
                 let rightBarContent = '';

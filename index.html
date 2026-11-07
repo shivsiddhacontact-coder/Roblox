@@ -705,6 +705,15 @@ window.RASHI_NAMES = [
     "Tula", "Vrishchika", "Dhanu", "Makara", "Kumbha", "Meena"
 ];
 
+const TITHI_NAMES_HINDI = [
+    "शुक्ल प्रतिपदा", "शुक्ल द्वितीया", "शुक्ल तृतीया", "शुक्ल चतुर्थी", "शुक्ल पंचमी",
+    "शुक्ल षष्ठी", "शुक्ल सप्तमी", "शुक्ल अष्टमी", "शुक्ल नवमी", "शुक्ल दशमी",
+    "शुक्ल एकादशी", "शुक्ल द्वादशी", "शुक्ल त्रयोदशी", "शुक्ल चतुर्दशी", "पूर्णिमा",
+    "कृष्ण प्रतिपदा", "कृष्ण द्वितीया", "कृष्ण तृतीया", "कृष्ण चतुर्थी", "कृष्ण पंचमी",
+    "कृष्ण षष्ठी", "कृष्ण सप्तमी", "कृष्ण अष्टमी", "कृष्ण नवमी", "कृष्ण दशमी",
+    "कृष्ण एकादशी", "कृष्ण द्वादशी", "कृष्ण त्रयोदशी", "कृष्ण चतुर्दशी", "अमावस्या"
+];
+
 const TITHI_NAMES = [
     "Shukla Pratipada", "Shukla Dwitiya", "Shukla Tritiya", "Shukla Chaturthi", "Shukla Panchami",
     "Shukla Shashthi", "Shukla Saptami", "Shukla Ashtami", "Shukla Navami", "Shukla Dashami",
@@ -2527,7 +2536,7 @@ function getHinduCalendarHeader(year, month) {
     const vsStr = Array.from(vsSet).join('/');
     const ssStr = Array.from(ssSet).join('/');
 
-    return `${monthStr} | Vikram Samvat ${vsStr} | Shaka Samvat ${ssStr}`;
+    return `${monthStr} | विक्रम संवत ${vsStr} | शक संवत ${ssStr}`;
 }
 // --- END HINDU HELPERS ---
 
@@ -6021,7 +6030,7 @@ restrictionModalHtml += smHtml;
                 </div>
                 <div style="background: var(--bg-color); padding: 10px; border-radius: 8px; border: 1px solid #eee;">
                     <span style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 2px;">तिथि (Tithi)</span>
-                    <strong style="font-size: 15px; color: var(--primary-dark);">${p.tithiName}</strong>
+                    <strong style="font-size: 15px; color: var(--primary-dark);">${TITHI_NAMES_HINDI[p.tithiIndex] || p.tithiName}</strong>
                 </div>
                 <div style="background: var(--bg-color); padding: 10px; border-radius: 8px; border: 1px solid #eee;">
                     <span style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 2px;">तिथि स्वामी (Tithi Swami)</span>
@@ -6045,7 +6054,7 @@ restrictionModalHtml += smHtml;
                 </div>
                 <div style="background: var(--bg-color); padding: 10px; border-radius: 8px; border: 1px solid #eee;">
                     <span style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 2px;">नक्षत्र (Nakshatra)</span>
-                    <strong style="font-size: 15px; color: var(--primary-dark);">${p.moonNakshatraName} <span style="font-size: 12px; color: var(--text-muted); font-weight: normal;">(Pada ${Math.floor((p.moonLongitude % (360/27)) / (360/108)) + 1})</span></strong>
+                    <strong style="font-size: 15px; color: var(--primary-dark);">${NAKSHATRA_NAMES_HINDI[p.moonNakshatraIndex] || p.moonNakshatraName} <span style="font-size: 12px; color: var(--text-muted); font-weight: normal;">(Pada ${Math.floor((p.moonLongitude % (360/27)) / (360/108)) + 1})</span></strong>
                 </div>
                             ${(() => {
                 let nData = window.NAKSHATRA_FORM_DATA[p.moonNakshatraName];
